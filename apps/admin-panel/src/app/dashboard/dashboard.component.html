@@ -1,0 +1,30 @@
+<div class="dashboard-container">
+  <div class="header-section">
+    <h2>Resumen General</h2>
+    <p>Bienvenido de vuelta, aquí tienes el estado comercial de hoy.</p>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card" *ngFor="let stat of stats">
+      <div class="stat-icon" [style.background-color]="stat.color + '20'" [style.color]="stat.color">
+        <i class="feather icon-{{ stat.icon }}"></i>
+      </div>
+      <div class="stat-info">
+        <h3>{{ stat.value }}</h3>
+        <p>{{ stat.title }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="recent-appointments">
+    <div class="card">
+      <div class="card-header">
+        <h3>Próximas Citas</h3>
+        <button class="view-all-btn">Ver todas</button>
+      </div>
+      <div class="card-body">
+        <p class="empty-state">No hay citas en las próximas horas.</p>
+      </div>
+    </div>
+  </div>
+</div>

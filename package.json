@@ -1,0 +1,14 @@
+{
+  "name": "barber-saas",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "start:api": "npm run start:dev --workspace=api",
+    "start:admin": "npm run start --workspace=admin-panel",
+    "start:booking": "npm run dev --workspace=booking-portal"
+  }
+}

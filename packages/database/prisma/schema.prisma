@@ -1,0 +1,126 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum RolUsuario {
+  SUPER_ADMIN
+  DUENO
+  EMPLEADO
+  CLIENTE
+}
+
+enum EstadoCita {
+  PENDIENTE
+  CONFIRMADA
+  COMPLETADA
+  CANCELADA
+}
+
+model Estetica {
+  id              String   @id @default(uuid())
+  nombre          String
+  subdominio      String   @unique
+  logoUrl         String?
+  colorPrimario   String?  @default("#000000")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  usuarios        Usuario[]
+  servicios       Servicio[]
+  citas           Cita[]
+  facturas        Factura[]
+  inventarios     Inventario[]
+}
+
+model Usuario {
+  id              String   @id @default(uuid())
+  email           String   @unique
+  nombre          String
+  rol             RolUsuario @default(CLIENTE)
+  
+  esteticaId      String?
+  estetica        Estetica? @relation(fields: [esteticaId], references: [id])
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  citasComoCliente  Cita[] @relation("ClienteCitas")
+  citasComoEmpleado Cita[] @relation("EmpleadoCitas")
+  serviciosOfrecidos EmpleadoServicio[]
+}
+
+model Servicio {
+  id              String   @id @default(uuid())
+  nombre          String
+  descripcion     String?
+  duracionMinutos Int
+  precio          Decimal  @db.Decimal(10, 2)
+  
+  esteticaId      String
+  estetica        Estetica @relation(fields: [esteticaId], references: [id])
+
+  citas           Cita[]
+  empleadosPermitidos EmpleadoServicio[]
+}
+
+model EmpleadoServicio {
+  empleadoId      String
+  servicioId      String
+  comisionPct     Decimal @db.Decimal(5, 2)
+
+  empleado        Usuario  @relation(fields: [empleadoId], references: [id])
+  servicio        Servicio @relation(fields: [servicioId], references: [id])
+
+  @@id([empleadoId, servicioId])
+}
+
+model Cita {
+  id              String   @id @default(uuid())
+  fechaHoraInicio DateTime
+  fechaHoraFin    DateTime
+  estado          EstadoCita @default(PENDIENTE)
+
+  esteticaId      String
+  estetica        Estetica @relation(fields: [esteticaId], references: [id])
+
+  clienteId       String
+  cliente         Usuario @relation("ClienteCitas", fields: [clienteId], references: [id])
+
+  empleadoId      String
+  empleado        Usuario @relation("EmpleadoCitas", fields: [empleadoId], references: [id])
+
+  servicioId      String
+  servicio        Servicio @relation(fields: [servicioId], references: [id])
+
+  factura         Factura?
+}
+
+model Factura {
+  id              String   @id @default(uuid())
+  montoTotal      Decimal  @db.Decimal(10, 2)
+  urlPdf          String?
+  urlXml          String?
+  pagado          Boolean  @default(false)
+  fechaEmision    DateTime @default(now())
+
+  esteticaId      String
+  estetica        Estetica @relation(fields: [esteticaId], references: [id])
+
+  citaId          String   @unique
+  cita            Cita     @relation(fields: [citaId], references: [id])
+}
+
+model Inventario {
+  id              String   @id @default(uuid())
+  nombreItem      String
+  cantidadStock   Int      @default(0)
+  unidadMedida    String
+
+  esteticaId      String
+  estetica        Estetica @relation(fields: [esteticaId], references: [id])
+}

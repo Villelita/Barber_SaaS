@@ -1,0 +1,26 @@
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="brand-logo">
+      <div class="logo-circle">B</div>
+      <span class="brand-name">Barber SaaS</span>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <ul class="nav-list">
+      <li class="nav-item" *ngFor="let item of menuItems">
+        <a [routerLink]="item.route" routerLinkActive="active" class="nav-link">
+          <i class="feather icon-{{ item.icon }}"></i>
+          <span>{{ item.label }}</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <div class="sidebar-footer">
+    <a routerLink="/login" class="logout-btn">
+      <i class="feather icon-log-out"></i>
+      <span>Cerrar Sesión</span>
+    </a>
+  </div>
+</aside>
