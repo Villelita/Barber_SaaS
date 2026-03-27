@@ -13,11 +13,17 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
         query: {
           $allModels: {
             async $allOperations({ model, operation, args, query }) {
-              const skipTenantModels = ['Estetica', 'Usuario']; // Modelos que quiza no filtres directamente o tienen lógica custom
+              const skipTenantModels = ['Estetica', 'Usuario'];
               
               if (!skipTenantModels.includes(model)) {
-                // Inyectar condition de tenant
-                args.where = { ...args.where, esteticaId: request.tenantId };
+                // Si la operación tiene 'where' (busqueda, update, delete)
+                if (['findFirst', 'findMany', 'findUnique', 'update', 'updateMany', 'delete', 'deleteMany', 'count', 'aggregate', 'groupBy'].includes(operation)) {
+                  (args as any).where = { ...(args as any).where, esteticaId: request.tenantId };
+                }
+                // Si es creación, inyectamos en 'data' si no existe ya
+                if (['create', 'createMany'].includes(operation)) {
+                  (args as any).data = { ...(args as any).data, esteticaId: request.tenantId };
+                }
               }
               return query(args);
             },

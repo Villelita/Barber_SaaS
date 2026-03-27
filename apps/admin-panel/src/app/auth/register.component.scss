@@ -1,0 +1,19 @@
+/* Reutilizamos los estilos del login para mantener la estética */
+@import './login.component.scss';
+
+.auth-footer {
+  margin-top: 1.5rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #666;
+
+  a {
+    color: #000;
+    font-weight: 600;
+    text-decoration: none;
+    
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
