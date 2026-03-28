@@ -1,13 +1,27 @@
 <div class="dashboard-container">
-  <div class="header-section">
-    <h2>Resumen General</h2>
-    <p>Bienvenido de vuelta, aquí tienes el estado comercial de hoy.</p>
+  <div class="header">
+    <div class="title-section">
+      <h1 class="welcome-text">Panel de Control</h1>
+      <h2 class="business-badge" *ngIf="businessName">{{ businessName }}</h2>
+    </div>
+    <p class="subtitle">Resumen general de tu negocio hoy.</p>
+  </div>
+
+  <div class="actions-section">
+    <button class="action-btn primary" (click)="onAddAppointment()">
+      <span class="icon">+</span>
+      Agendar Nueva Cita
+    </button>
+    <button class="action-btn secondary" (click)="onViewFinances()">
+      <span class="icon">💰</span>
+      Ver Finanzas
+    </button>
   </div>
 
   <div class="stats-grid">
     <div class="stat-card" *ngFor="let stat of stats">
       <div class="stat-icon" [style.background-color]="stat.color + '20'" [style.color]="stat.color">
-        <i class="feather icon-{{ stat.icon }}"></i>
+        <span class="icon-placeholder">{{ stat.id === 'ingresos' ? '$' : (stat.id === 'citas' ? '📅' : (stat.id === 'clientes' ? '👥' : '✂️')) }}</span>
       </div>
       <div class="stat-info">
         <h3>{{ stat.value }}</h3>
@@ -16,14 +30,50 @@
     </div>
   </div>
 
-  <div class="recent-appointments">
-    <div class="card">
+  <div class="dashboard-content">
+    <div class="card recent-appointments">
       <div class="card-header">
-        <h3>Próximas Citas</h3>
+        <h3>Próximas Citas - {{ businessName }}</h3>
         <button class="view-all-btn">Ver todas</button>
       </div>
       <div class="card-body">
-        <p class="empty-state">No hay citas en las próximas horas.</p>
+        <div class="appointment-list" *ngIf="appointments.length > 0; else emptyState">
+          <div class="appointment-item" *ngFor="let appt of appointments">
+            <div class="appt-time">{{ appt.hora }}</div>
+            <div class="appt-details">
+              <strong>{{ appt.cliente }}</strong>
+              <span>{{ appt.servicio }}</span>
+            </div>
+            <div class="appt-status" [class]="appt.estado.toLowerCase()">
+              {{ appt.estado }}
+            </div>
+          </div>
+        </div>
+        <ng-template #emptyState>
+          <p class="empty-state">No hay citas en las próximas horas.</p>
+        </ng-template>
+      </div>
+    </div>
+
+    <!-- Espacio para Finanzas Rápidas (Solo Dueños) -->
+    <div class="card finance-summary">
+      <div class="card-header">
+        <h3>Resumen Financiero</h3>
+      </div>
+      <div class="card-body">
+        <div class="finance-item">
+          <span>Ingresos Semanales</span>
+          <strong>$8,450.00</strong>
+        </div>
+        <div class="finance-item">
+          <span>Gastos (Productos)</span>
+          <strong class="negative">-$1,200.00</strong>
+        </div>
+        <div class="finance-divider"></div>
+        <div class="finance-item total">
+          <span>Balance Neto</span>
+          <strong class="positive">$7,250.00</strong>
+        </div>
       </div>
     </div>
   </div>

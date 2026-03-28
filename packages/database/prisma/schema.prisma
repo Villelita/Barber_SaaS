@@ -1,6 +1,7 @@
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 generator client {
@@ -30,7 +31,10 @@ model Estetica {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
-  usuarios        Usuario[]
+  ownerId         String
+  owner           Usuario  @relation("OwnerEsteticas", fields: [ownerId], references: [id])
+  
+  usuarios        Usuario[] @relation("EsteticaEmployees")
   servicios       Servicio[]
   citas           Cita[]
   facturas        Factura[]
@@ -43,8 +47,12 @@ model Usuario {
   nombre          String
   rol             RolUsuario @default(CLIENTE)
   
+  // Para Empleados: El negocio al que pertenecen
   esteticaId      String?
-  estetica        Estetica? @relation(fields: [esteticaId], references: [id])
+  estetica        Estetica? @relation("EsteticaEmployees", fields: [esteticaId], references: [id])
+  
+  // Para Dueños: Los negocios que poseen
+  propiasEsteticas Estetica[] @relation("OwnerEsteticas")
   
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
