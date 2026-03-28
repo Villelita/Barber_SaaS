@@ -9,6 +9,10 @@
   "scripts": {
     "start:api": "npm run start:dev --workspace=api",
     "start:admin": "npm run start --workspace=admin-panel",
-    "start:booking": "npm run dev --workspace=booking-portal"
+    "start:booking": "npm run dev --workspace=booking-portal",
+    "dev": "concurrently \"npm run start:api\" \"npm run start:admin\" \"npm run start:booking\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
   }
 }
