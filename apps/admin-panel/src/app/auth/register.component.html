@@ -79,6 +79,10 @@
         </small>
       </div>
 
+      <div class="success-banner" *ngIf="successMessage">
+        {{ successMessage }}
+      </div>
+
       <div class="error-banner" *ngIf="errorMessage">
         {{ errorMessage }}
       </div>

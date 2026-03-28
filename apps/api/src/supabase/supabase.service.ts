@@ -8,11 +8,11 @@ export class SupabaseService {
   private supabaseClient: SupabaseClient;
 
   constructor(private readonly configService: ConfigService) {
-    const supabaseUrl = this.configService.get<string>('SUPABASE_URL');
-    const supabaseKey = this.configService.get<string>('SUPABASE_KEY');
+    const supabaseUrl = this.configService.get<string>('NEXT_PUBLIC_SUPABASE_URL');
+    const supabaseKey = this.configService.get<string>('NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY');
 
     if (!supabaseUrl || !supabaseKey) {
-      this.logger.warn('Faltan variables de entorno SUPABASE_URL o SUPABASE_KEY. El cliente de Supabase no se inicializará correctamente.');
+      this.logger.warn('Faltan variables de entorno para Supabase. Verifica NEXT_PUBLIC_SUPABASE_URL y NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY.');
     }
 
     this.supabaseClient = createClient(supabaseUrl || 'http://localhost', supabaseKey || 'public-anon-key', {

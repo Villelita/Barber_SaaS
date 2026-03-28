@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { AuthService, UserRole } from '../services/auth.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -9,13 +10,22 @@ import { RouterModule } from '@angular/router';
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss'
 })
-export class SidebarComponent {
+export class SidebarComponent implements OnInit {
+  isOwner = false;
+  activeBusinessName = '';
+
   menuItems = [
-    { label: 'Dashboard', icon: 'home', route: '/dashboard' },
-    { label: 'Agenda / Citas', icon: 'calendar', route: '/appointments' },
-    { label: 'Clientes', icon: 'users', route: '/customers' },
-    { label: 'Servicios', icon: 'scissors', route: '/services' },
-    { label: 'Empleados', icon: 'briefcase', route: '/employees' },
-    { label: 'Configuración', icon: 'settings', route: '/settings' }
+    { label: 'Mis Negocios', icon: 'layout', route: '/business-list' },
+    { label: 'Configuración', icon: 'settings', route: '/settings' },
+    { label: 'Mi Perfil', icon: 'user', route: '/profile' }
   ];
+
+  constructor(private authService: AuthService) {}
+
+  ngOnInit() {
+    this.isOwner = this.authService.getRole() === UserRole.DUENO;
+    this.authService.activeBusiness.subscribe(business => {
+      this.activeBusinessName = business?.nombre || '';
+    });
+  }
 }

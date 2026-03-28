@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { AuthService, UserRole } from '../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -15,7 +16,12 @@ export class LoginComponent {
   isLoading = false;
   errorMessage = '';
 
-  constructor(private fb: FormBuilder, private router: Router) {
+  constructor(
+    private fb: FormBuilder, 
+    private router: Router,
+    private authService: AuthService,
+    private cdr: ChangeDetectorRef
+  ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]]
@@ -33,21 +39,29 @@ export class LoginComponent {
     const { email, password } = this.loginForm.value;
 
     try {
-      // TODO: Connect this mock to actual Supabase auth integration
-      console.log('Intentando hacer login con', email);
+      console.log('Iniciando sesión con Supabase:', email);
       
-      // Simulando llamada a la API
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Simular login exitoso
+      await this.authService.login(email, password);
+
       this.router.navigate(['/dashboard']);
-      console.log('Login exitoso (Simulado)');
+      console.log('Login exitoso');
       
     } catch (error: any) {
       console.error('Error en login:', error);
-      this.errorMessage = error.message || 'Error al iniciar sesión. Verifica tus credenciales.';
+      
+      if (error.message === 'Invalid login credentials') {
+        this.errorMessage = 'Credenciales inválidas. Revisa tu correo y contraseña.';
+      } else if (error.status === 400 && error.message.includes('Email not confirmed')) {
+        this.errorMessage = 'Por favor, confirma tu correo electrónico antes de iniciar sesión.';
+      } else if (error.status === 429) {
+        this.errorMessage = 'Demasiados intentos. Por favor, espera un momento.';
+      } else {
+        this.errorMessage = error.message || 'Error al iniciar sesión. Inténtalo de nuevo.';
+      }
+      this.cdr.detectChanges();
     } finally {
       this.isLoading = false;
+      this.cdr.detectChanges();
     }
   }
 }
