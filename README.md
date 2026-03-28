@@ -28,7 +28,7 @@ La separación entre inquilinos (Estéticas) se maneja a nivel lógico (`estetic
     /booking-portal      # Frontend Next.js: Landing pública SEO-friendly y Formulario de Reservaciones multi-paso.
   /packages
     /database            # Prisma Schema, Migraciones y Seeders (seed.ts).
-  package.json           # Workspaces config
+  package.json           # Workspaces config (Incluye script maestro `npm run dev` usando concurrently)
 ```
 
 ## Estado Actual de Desarrollo 🚀
@@ -38,16 +38,17 @@ Hemos finalizado la Fase 1 (Arquitectura Base), que incluye:
 - [x] **Base de Datos**: Esquema Prisma construido (`Estetica`, `Usuario`, `Servicio`, `Cita`).
 - [x] **Backend (NestJS)**: 
   - Módulo Global de Autenticación con `@supabase/supabase-js`.
-  - Guards (`SupabaseAuthGuard`) y Tenant Interceptors.
+  - Motor de **Disponibilidad de Citas** (Cálculo dinámico de recesos de 15 minutos comprobando solapamientos).
+  - Configuración mixta de Guards: Rutas públicas habilitadas (CORS) para Next.js y rutas estrictas (RBAC) para el Admin.
   - Endpoints CRUD creados y protegidos para **Citas, Servicios y Empleados**.
 - [x] **Frontend Administrativo (Angular)**: 
   - UI interactiva del Login con Reactive Forms y SCSS Premium.
   - Layout del Dashboard con Menú Lateral (Sidebar) y Navbar superior.
 - [x] **Frontend de Reservas (Next.js)**: 
   - Landing Page moderna diseñada con Tailwind v4 (Colores dinámicos, Glassmorphism).
-  - Web App Flow de Reservas compuesto de 3 Pasos (Elegir Servicio -> Horario -> Confirmar Datos).
-  - Wrapper Cliente API configurado para conectar con NestJS.
-- [x] **Script de Seeding**: Archivo `packages/database/prisma/seed.ts` configurado para poblar la DB con un Super Admin, un Tenant de prueba y servicios básicos al instante de desplegar.
+  - Web App Flow de Reservas de 3 Pasos (Servicio -> Horario -> Checkout).
+  - Integración **En Vivo** con Endpoints de NestJS (Los horarios se calculan On-Demand según la fecha seleccionada).
+- [x] **Script de Seeding**: Archivo `packages/database/prisma/seed.ts` configurado para poblar la DB con un Super Admin, un Tenant de prueba y servicios básicos.
 
 ## Próximos Cambios a Futuro (Roadmap V1) 🗺️
 
